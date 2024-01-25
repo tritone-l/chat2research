@@ -12,3 +12,7 @@ windos开发者可以自己写个bat脚本或者人工将需要内容放入对�
 
 ## 整体架构说明
 ![img.png](img.png)
+
+
+## 存储
+文档存储 ~/.chat2rs/docs/

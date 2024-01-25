@@ -17,6 +17,7 @@
         <dependency>
             <groupId>com.research.chat</groupId>
             <artifactId>chat2rs-server-domain</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>

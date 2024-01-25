@@ -1,4 +1,3 @@
-HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
@@ -30,9 +29,11 @@ build/
 !**/src/test/**/build/
 
 ### VS Code ###
-.vscode/
+## .vscode/
 .iml
 
 /chat2rs-client/app/jre/
 /chat2rs-client/node_modules
 /chat2rs-client/app/jar/
+*.flattened-pom.xml
+*.flattened-pom.xml

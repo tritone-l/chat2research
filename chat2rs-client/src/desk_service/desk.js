@@ -2,7 +2,7 @@ const { spawn } = require('child_process');
 const axios = require('axios');
 
 function exitDeskService() {
-    axios.get('http://127.0.0.1:8000/exit')
+    axios.get('http://127.0.0.1:10086/exit')
         .then(response => {
             // 处理响应数据
             console.log('Response Data:', response.data);
@@ -15,7 +15,7 @@ function exitDeskService() {
 
 function createDeskService(){
 
-  const javaProcess = spawn('app/jre/bin/java', ['-jar', 'app/jar/rs-start-0.0.1-SNAPSHOT.jar']);
+  const javaProcess = spawn('app/jre/bin/java', ['-jar', 'app/jar/chat2research.jar']);
 
   //处理 Java 服务的输出
   javaProcess.stdout.on('data', (data) => {

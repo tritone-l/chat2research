@@ -1,0 +1,6 @@
+# 端口号
+server:
+  port: 10086
+logging:
+  level:
+    root: info

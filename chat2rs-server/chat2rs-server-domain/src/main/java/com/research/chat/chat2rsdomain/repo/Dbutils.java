@@ -40,7 +40,12 @@ public class Dbutils {
 
     private static final ThreadLocal<SqlSession> SQL_SESSION_THREAD_LOCAL = new ThreadLocal<>();
 
-    public static void init() {
+    public static void init()  {
+        try {
+            before();
+        } catch (IOException ignore) {
+
+        }
     }
 
     public static void setSession() {
@@ -58,15 +63,11 @@ public class Dbutils {
 
     private static SqlSessionFactory sqlSessionFactory;
 
-    static {
-        try {
-            before();
-        } catch (IOException e) {
-            log.error("Dbutils error", e);
-        }
-    }
 
-
+    /**
+     * 初始化内置的服务器
+     * @throws IOException
+     */
     private static void before() throws IOException {
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
         //这是mybatis-plus的配置对象，对mybatis的Configuration进行增强
@@ -133,7 +134,7 @@ public class Dbutils {
     }
 
     /**
-     * 初始化数据源
+     * 初始化内置数据库
      *
      * @return
      */

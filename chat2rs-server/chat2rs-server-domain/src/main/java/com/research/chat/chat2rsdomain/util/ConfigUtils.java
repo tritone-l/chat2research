@@ -113,10 +113,14 @@ public class ConfigUtils {
         }
     }
 
+    /**
+     * 该方法保证只有一个服务端在运行
+     */
     public static void initProcess() {
         try {
             ProcessHandle currentProcess = ProcessHandle.current();
             long pid = currentProcess.pid();
+            log.info("current pid {}",pid);
             String environment = StringUtils.defaultString(System.getProperty("spring.profiles.active"), "dev");
             File pidFile = new File(CONFIG_BASE_PATH + File.separator + "config" + File.separator + environment + "app.pid");
             if (!pidFile.exists()) {
@@ -126,7 +130,6 @@ public class ConfigUtils {
                 log.info("oldPid:{}", oldPid);
                 if (StringUtils.isNotBlank(oldPid)) {
                     Optional<ProcessHandle> processHandle = ProcessHandle.of(Long.parseLong(oldPid));
-                    //log.error("processHandle:{}", JSON.toJSONString(processHandle));
                     processHandle.ifPresent(handle -> {
                         ProcessHandle.Info info = handle.info();
                         String[] arguments = info.arguments().orElse(null);
@@ -140,7 +143,7 @@ public class ConfigUtils {
                                 log.info("destroy old process--------");
                                 break;
                             }
-                            if (argument.contains("Application")) {
+                            if (argument.contains("chat2research.jar")) {
                                 handle.destroy();
                                 log.info("destroy old process--------");
                                 break;

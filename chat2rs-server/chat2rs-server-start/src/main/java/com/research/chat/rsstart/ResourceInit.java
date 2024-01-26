@@ -1,6 +1,7 @@
 package com.research.chat.rsstart;
 
 import com.research.chat.chat2rsdomain.repo.Dbutils;
+import com.research.chat.chat2rsdomain.util.ConfigUtils;
 
 /**
  * @name：ResourceInit
@@ -10,12 +11,12 @@ import com.research.chat.chat2rsdomain.repo.Dbutils;
 public class ResourceInit {
 
     public static void init(){
+        ConfigUtils.initProcess();
         initDb();
     }
     private static void initDb(){
-//        new Thread(() -> {
-//            Dbutils.init();
-//        }).start();
-        Dbutils.init();
+        new Thread(() -> {
+            Dbutils.init();
+        }).start();
     }
 }

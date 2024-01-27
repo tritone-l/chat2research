@@ -1,0 +1,14 @@
+
+.page {
+    display: flex;
+    color: red;
+}
+
+.page__sidebar {
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.page__preview {
+    flex: 1;
+}

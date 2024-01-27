@@ -32,7 +32,7 @@ build/
 ## .vscode/
 .iml
 
-/chat2rs-client/app/jre/
+/chat2rs-client/app/jre
 /chat2rs-client/node_modules
 *.flattened-pom.xml
 *.flattened-pom.xml

@@ -15,8 +15,8 @@ function createWindow() {
     }
   })
   // and load the index.html of the app.
-  // mainWindow.loadFile('src/index.html')
-  mainWindow.loadURL('http://localhost:3000/')
+  mainWindow.loadFile('../build/index.html')
+  // mainWindow.loadURL('http://localhost:3000/')
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 }
@@ -36,7 +36,7 @@ app.whenReady().then(() => {
   });
 
   app.on('quit', () => {
-    exitDeskService();
+    // exitDeskService();
   })
 
   app.on('activate', function () {

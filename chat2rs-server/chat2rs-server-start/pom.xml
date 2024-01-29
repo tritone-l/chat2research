@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.research.chat</groupId>
-        <artifactId>chat2rs-server</artifactId>
+        <artifactId>chat2rs-server-parent</artifactId>
         <version>${revision}</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -15,14 +15,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.research.chat</groupId>
-            <artifactId>chat2rs-server-domain</artifactId>
-            <version>${revision}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.research.chat</groupId>
+            <artifactId>chat2rs-server-domain-repo</artifactId>
         </dependency>
     </dependencies>
     <build>

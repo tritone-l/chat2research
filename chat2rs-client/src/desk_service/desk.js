@@ -15,19 +15,25 @@ function exitDeskService() {
 
 function createDeskService(){
 
-  const javaProcess = spawn('app/jre/bin/java', ['-jar', 'app/jar/chat2research.jar']);
+    const jarPath = 'app/jar/chat2research.jar';
 
-  //处理 Java 服务的输出
+    const javaArgs = [
+        '-jar', // 指定要执行的 JAR 文件
+        '-Dchat2rs.version=1',
+        jarPath // JAR 文件的路径
+    ];
+
+
+    const javaProcess = spawn('app/jre/bin/java', javaArgs);
+
+    //处理 Java 服务的输出
   javaProcess.stdout.on('data', (data) => {
     console.log(`Java Process Output: ${data}`);
-    // 在此添加检测 Java 服务是否启动的逻辑
-    // 例如，通过HTTP请求检测服务是否响应
   });
 
   //处理 Java 服务的错误
   javaProcess.stderr.on('data', (data) => {
     console.error(`Java Process Error: ${data}`);
-    // 在此添加错误处理逻辑
   });
 }
 

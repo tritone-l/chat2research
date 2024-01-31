@@ -29,14 +29,14 @@ app.whenReady().then(() => {
   createWindow()
 
   //启动桌面服务器
-  // createDeskService()
+  createDeskService()
 
   app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
   });
 
   app.on('quit', () => {
-    // exitDeskService();
+    exitDeskService();
   })
 
   app.on('activate', function () {

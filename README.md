@@ -6,6 +6,8 @@ Workspace for Literature Management and Research Work.
 ## add paper 
 
 
+## 本项目借鉴了 AI-java ，chat2db 的部分 同大模型api交互的代码 
+
 ## Star History
 
 <a href="https://star-history.com/#chat2research/chat2research&Date">

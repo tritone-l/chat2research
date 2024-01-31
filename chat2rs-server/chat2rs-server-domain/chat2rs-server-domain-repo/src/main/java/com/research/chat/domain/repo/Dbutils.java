@@ -2,6 +2,7 @@ package com.research.chat.domain.repo;
 
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator;
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
@@ -9,6 +10,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.GlobalConfigUtils;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.research.chat.domain.repo.mapper.LocalFileRecordMapper;
+import com.research.chat.domain.repo.model.LocalFileRecordDO;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,14 +33,13 @@ import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 @Slf4j
 public class Dbutils {
 
-    private static final ThreadLocal<SqlSession> SQL_SESSION_THREAD_LOCAL = new ThreadLocal<>();
+    private static SqlSession SQL_SESSION;
 
     public static void init()  {
         try {
@@ -48,16 +50,8 @@ public class Dbutils {
     }
 
     public static void setSession() {
-        SqlSession session = sqlSessionFactory.openSession(true);
-        SQL_SESSION_THREAD_LOCAL.set(session);
-    }
+        SQL_SESSION = sqlSessionFactory.openSession(true);
 
-    public static void removeSession() {
-        SqlSession session = SQL_SESSION_THREAD_LOCAL.get();
-        if (session != null) {
-            session.close();
-        }
-        SQL_SESSION_THREAD_LOCAL.remove();
     }
 
     private static SqlSessionFactory sqlSessionFactory;
@@ -95,26 +89,24 @@ public class Dbutils {
         //构建sqlSessionFactory
         sqlSessionFactory = builder.build(configuration);
 
+        //数据库版本
         initFlyway(dataSource);
         //创建session
-
+        setSession();
     }
 
     private static void initFlyway(DataSource dataSource) {
         String currentVersion = ConfigUtils.getLocalVersion();
         ConfigJson configJson = ConfigUtils.getConfig();
-        // Represents that the current version has been successfully launched
         if (StringUtils.isNotBlank(currentVersion) && configJson != null && StringUtils.equals(currentVersion,
                 configJson.getLatestStartupSuccessVersion())) {
             return;
         }else {
             Flyway flyway = Flyway.configure()
                     .dataSource(dataSource)
-                    .locations("classpath:db/migration")
+                    .locations("classpath:database/local")
                     .load();
             flyway.migrate();
-
-
             configJson.setLatestStartupSuccessVersion(currentVersion);
             ConfigUtils.setConfig(configJson);
         }
@@ -139,14 +131,8 @@ public class Dbutils {
      */
     private static DataSource initDataSource() {
         HikariDataSource dataSource = new HikariDataSource();
-        String environment = Objects.toString(System.getProperty("spring.profiles.active"), "dev");
-        if ("dev".equalsIgnoreCase(environment)) {
-            dataSource.setJdbcUrl("jdbc:h2:file:~/.chat2rs/db/chat2rs_dev;MODE=MYSQL");
-        }else if ("test".equalsIgnoreCase(environment)) {
-            dataSource.setJdbcUrl("jdbc:h2:file:~/.chat2rs/db/chat2rs_test;MODE=MYSQL");
-        }else {
-            dataSource.setJdbcUrl("jdbc:h2:~/.chat2rs/db/chat2rs;MODE=MYSQL;FILE_LOCK=NO");
-        }
+
+        dataSource.setJdbcUrl("jdbc:h2:file:~/.chat2rs/db/chat2rs_dev;MODE=MYSQL");
         dataSource.setDriverClassName("org.h2.Driver");
         dataSource.setIdleTimeout(60000);
         dataSource.setAutoCommit(true);
@@ -215,22 +201,7 @@ public class Dbutils {
     }
 
     public static <T> T getMapper(Class<T> clazz) {
-        SqlSession session = SQL_SESSION_THREAD_LOCAL.get();
-        return session.getMapper(clazz);
+        return SQL_SESSION.getMapper(clazz);
     }
 
-//    public static void main(String[] args) {
-//
-//        ExecutorService e = Executors.newCachedThreadPool();
-//        for (int i = 0; i < 20; i++) {
-//            e.execute(() -> {
-//                SqlSession session = sqlSessionFactory.openSession();
-//                DataSourceMapper mapper = session.getMapper(DataSourceMapper.class);
-//                DataSourceDO dataSourceDO = mapper.selectById(1);
-//                session.close();
-//                System.out.println(JSON.toJSONString(dataSourceDO));
-//            });
-//        }
-//
-//    }
 }

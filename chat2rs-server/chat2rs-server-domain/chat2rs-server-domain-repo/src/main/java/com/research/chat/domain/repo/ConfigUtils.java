@@ -3,24 +3,31 @@ package com.research.chat.domain.repo;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.UUID;
 import com.alibaba.fastjson2.JSON;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.mapping.Environment;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.io.File;
+import java.io.InputStream;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
  * copy from internet
  * Configure information on the user side
+ *
  * @author xxx
  */
 @Slf4j
 public class ConfigUtils {
     public static String CONFIG_BASE_PATH = System.getProperty("user.home") + File.separator + ".chat2rs";
 
-    public static final String APP_PATH = getAppPath();
+    private static String preVersion = null;
 
     private static String version = null;
+
     public static File versionFile = null;
     public static File configFile;
     private static ConfigJson config = null;
@@ -28,15 +35,22 @@ public class ConfigUtils {
     public static File clientIdFile;
     private static String clientId = null;
 
+
     static {
-        String environment = StringUtils.defaultString(System.getProperty("spring.profiles.active"), "dev");
-        if (APP_PATH != null) {
-            versionFile = new File(
-                    getAppPath() + File.separator + "versions" + File.separator + "version");
-            if (!versionFile.exists()) {
-                versionFile = null;
-            }
+        String environment = Objects.toString(System.getProperty("spring.profiles.active"), "dev");
+
+        version = System.getProperty("chat2rs.version");
+        System.out.println(version);
+        versionFile = new File(CONFIG_BASE_PATH + File.separator + "config" + File.separator + "version");
+
+        if (!versionFile.exists()) {
+            FileUtil.writeUtf8String(version, versionFile);
+        } else {
+            preVersion = FileUtil.readUtf8String(versionFile);
+            FileUtil.del(versionFile);
+            FileUtil.writeUtf8String(version, versionFile);
         }
+
         configFile = new File(
                 CONFIG_BASE_PATH + File.separator + "config" + File.separator + "config_" + environment + ".json");
         if (!configFile.exists()) {
@@ -120,7 +134,7 @@ public class ConfigUtils {
         try {
             ProcessHandle currentProcess = ProcessHandle.current();
             long pid = currentProcess.pid();
-            log.info("current pid {}",pid);
+            log.info("current pid {}", pid);
             String environment = StringUtils.defaultString(System.getProperty("spring.profiles.active"), "dev");
             File pidFile = new File(CONFIG_BASE_PATH + File.separator + "config" + File.separator + environment + "app.pid");
             if (!pidFile.exists()) {

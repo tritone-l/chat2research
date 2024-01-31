@@ -185,7 +185,7 @@ module.exports = function (webpackEnv) {
     }
     return loaders;
   };
-
+  console.log('paths.appBuild', paths.appBuild);
   return {
     target: ['browserslist'],
     // Webpack noise constrained to errors and warnings
@@ -219,8 +219,8 @@ module.exports = function (webpackEnv) {
       // webpack uses `publicPath` to determine where the app is being served from.
       // It requires a trailing slash, or the file assets will get an incorrect path.
       // We inferred the "public path" (such as / or /my-project) from homepage.
-      // publicPath: paths.publicUrlOrPath,
-      publicPath: './',
+      publicPath: isEnvProduction ? './' : paths.publicUrlOrPath,
+      // publicPath: './',
       // Point sourcemap entries to original disk location (format as URL on Windows)
       devtoolModuleFilenameTemplate: isEnvProduction
         ? info =>

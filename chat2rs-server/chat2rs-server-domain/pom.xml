@@ -18,6 +18,7 @@
         <module>chat2rs-server-domain-repo</module>
         <module>chat2rs-server-domain-ai</module>
         <module>chat2rs-server-domain-core</module>
+        <module>chat2rs-server-domain-model</module>
     </modules>
 
 

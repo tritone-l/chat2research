@@ -20,8 +20,9 @@
         </dependency>
         <dependency>
             <groupId>com.research.chat</groupId>
-            <artifactId>chat2rs-server-domain-repo</artifactId>
+            <artifactId>chat2rs-server-domain-core</artifactId>
         </dependency>
+
     </dependencies>
     <build>
         <finalName>chat2research</finalName>

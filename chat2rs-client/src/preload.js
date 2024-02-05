@@ -1,9 +1,9 @@
-const { contextBridge } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron')
 
-contextBridge.exposeInMainWorld('myAPI', {
-  desktop: true
+contextBridge.exposeInMainWorld('electronAPI', {
+  desktop: true,
+  onChangeFile: (callback) => ipcRenderer.on('change-file', (_event, value) => callback(value))
 })
-
 
 window.addEventListener('DOMContentLoaded', () => {
   const replaceText = (selector, text) => {
@@ -17,3 +17,4 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 
+window.ipcRenderer = ipcRenderer;

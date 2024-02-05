@@ -1,9 +1,10 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron')
 const path = require('node:path')
+const fs = require('fs');
 const { createDeskService, exitDeskService } = require('./desk_service/desk')
 
-function createWindow() {
+const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1000,
@@ -11,9 +12,79 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
+      enableRemoteModule: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })
+
+  // 打开文件
+  const openFile = (mainWindow) => {
+    dialog
+      .showOpenDialog({ properties: ['openFile', 'multiSelections'] })
+      .then((result) => {
+        if (result?.canceled) return;
+        const filePaths = result.filePaths ?? [];
+        filePaths.forEach((filepath) => {
+          const parseUrl = path.parse(filepath);
+          const name = parseUrl.base;
+          const file = {
+            path: filepath,
+            name,
+            data: fs.readFileSync(filepath),
+            type: 'arraybuffer'
+          }
+          mainWindow.webContents.send('change-file', file);
+        })
+      })
+  }
+  // 创建菜单
+  const createMenu = () => {
+    let menuTemplate = [
+      {
+        label: app.name,
+        submenu: [
+          { role: 'about' },
+          { type: 'separator' },
+          { role: 'services' },
+          { type: 'separator' },
+          { role: 'hide' },
+          { role: 'hideOthers' },
+          { role: 'unhide' },
+          { type: 'separator' },
+          { role: 'quit' }
+        ]
+      },
+      {
+        label: 'View',
+        submenu: [
+          { role: 'reload' },
+          { role: 'forceReload' },
+          { role: 'toggleDevTools' },
+          { type: 'separator' },
+          { role: 'resetZoom' },
+          { role: 'zoomIn' },
+          { role: 'zoomOut' },
+          { type: 'separator' },
+          { role: 'togglefullscreen' }
+        ]
+      },
+      {
+        label: "文件",
+        submenu: [
+          {
+            label: "打开",
+            click: async () => {
+              openFile(mainWindow);
+            }
+          },
+        ]
+      },
+    ];
+    let menuBuilder = Menu.buildFromTemplate(menuTemplate);
+    Menu.setApplicationMenu(menuBuilder);
+  }
+  createMenu();
+  // 打开文件
   // and load the index.html of the app.
   mainWindow.loadFile('./build/index.html')
   // mainWindow.loadURL('http://localhost:3000/')
@@ -21,15 +92,12 @@ function createWindow() {
   mainWindow.webContents.openDevTools()
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 
 app.whenReady().then(() => {
-  createWindow()
+  createWindow();
 
   //启动桌面服务器
-  createDeskService()
+  createDeskService();
 
   app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();

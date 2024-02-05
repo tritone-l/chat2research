@@ -5,20 +5,24 @@ import FilePDF from "../FilePDF";
 
 
 const Preview: FC = () => {
-    const selectedFile = usePageStore((state) => state.selectedFile)
+    const selectedFile = usePageStore((state) => state.selectedFile);
+    const fileList = usePageStore((state) => state.fileList);
     const containerRef = useRef<any>(null);
-    const lastFile = useRef<File | null>(null);
-    if (lastFile.current !== selectedFile) {
-        console.log(containerRef?.current.scrollTop);
-        lastFile.current = selectedFile;
-    }
 
-    return <div className={styles.container} ref={containerRef}>
+    return <>
         {
-            selectedFile && <FilePDF file={selectedFile} />
+            fileList.map(file => {
+                const isSelect = file.path === selectedFile?.path;
+                return <div key={file.path} className={styles.container} ref={containerRef} style={{
+                    display: isSelect ? 'block' : 'none'
+                }}>
+                    {
+                        selectedFile && <FilePDF file={selectedFile} />
+                    }
+                </div >
+            })
         }
-
-    </div >
+    </>
 }
 
 export default Preview;

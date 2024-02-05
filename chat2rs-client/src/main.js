@@ -86,8 +86,8 @@ const createWindow = () => {
   createMenu();
   // 打开文件
   // and load the index.html of the app.
-  mainWindow.loadFile('./build/index.html')
-  // mainWindow.loadURL('http://localhost:3000/')
+  mainWindow.loadFile('./build/index.html');
+  // mainWindow.loadURL('http://localhost:3000/');
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 }
